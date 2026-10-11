@@ -1,0 +1,85 @@
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+
+    function isSignedIn() {
+      return request.auth != null;
+    }
+
+    function isAdmin() {
+      return isSignedIn() && request.auth.token.email == 'khxzialt1@gmail.com';
+    }
+
+    function incoming() {
+      return request.resource.data;
+    }
+
+    function existing() {
+      return resource.data;
+    }
+
+    function isValidId(id) {
+      return id is string && id.size() > 0 && id.size() <= 128;
+    }
+
+    // Default deny catch-all
+    match /{document=**} {
+      allow read, write: if false;
+    }
+
+    // USERS
+    match /users/{userId} {
+      allow get, list: if true;
+      allow create, update: if true;
+      allow delete: if isAdmin();
+    }
+
+    // SERVICES (Dynamic Catalog)
+    match /services/{serviceId} {
+      allow get, list: if isSignedIn();
+      allow create: if isSignedIn();
+      allow update, delete: if isAdmin();
+    }
+
+    // JOBS
+    match /jobs/{jobId} {
+      allow get, list: if isSignedIn();
+      allow create: if isSignedIn();
+      allow update: if isSignedIn();
+      allow delete: if isSignedIn() && (existing().consumerId == request.auth.uid || isAdmin());
+
+      // BIDS SUBCOLLECTION
+      match /bids/{bidId} {
+        allow get, list: if isSignedIn();
+        allow create: if isSignedIn() && incoming().vendorId == request.auth.uid;
+        allow update: if isSignedIn() && (
+          existing().vendorId == request.auth.uid ||
+          isAdmin()
+        );
+        allow delete: if isSignedIn() && (existing().vendorId == request.auth.uid || isAdmin());
+      }
+
+      // RECEIPTS SUBCOLLECTION
+      match /receipts/{receiptId} {
+        allow get, list: if isSignedIn();
+        allow create: if isSignedIn() && incoming().vendorId == request.auth.uid;
+        allow update: if isSignedIn();
+        allow delete: if isAdmin();
+      }
+
+      // MESSAGES SUBCOLLECTION
+      match /messages/{messageId} {
+        allow get, list: if isSignedIn();
+        allow create: if isSignedIn();
+        allow update, delete: if isAdmin();
+      }
+    }
+
+    // REVIEWS
+    match /reviews/{reviewId} {
+      allow get, list: if isSignedIn();
+      allow create: if isSignedIn();
+      allow update, delete: if isAdmin();
+    }
+  }
+}

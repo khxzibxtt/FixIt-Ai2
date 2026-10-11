@@ -1,0 +1,194 @@
+{
+  "entities": {
+    "User": {
+      "title": "User",
+      "description": "User profile for FixIt consumers, vendors, or admins",
+      "type": "object",
+      "properties": {
+        "userId": { "type": "string" },
+        "displayName": { "type": "string" },
+        "email": { "type": "string" },
+        "photoUrl": { "type": "string" },
+        "role": { "type": "string", "enum": ["consumer", "vendor", "admin"] },
+        "plan": { "type": "string", "enum": ["free", "plus", "pro"] },
+        "walletBalance": { "type": "number" },
+        "lockedEscrowBalance": { "type": "number" },
+        "bidTokens": { "type": "number" },
+        "isVerifiedSeller": { "type": "boolean" },
+        "isAvailableNow": { "type": "boolean" },
+        "skills": { "type": "array" },
+        "bio": { "type": "string" },
+        "phoneMasked": { "type": "string" },
+        "rating": { "type": "number" },
+        "reviewsCount": { "type": "number" },
+        "strikesCount": { "type": "number" },
+        "createdAt": { "type": "string", "format": "date-time" },
+        "updatedAt": { "type": "string", "format": "date-time" }
+      },
+      "required": ["userId", "displayName", "email", "role", "walletBalance", "createdAt"]
+    },
+    "Service": {
+      "title": "Service",
+      "description": "Dynamic service catalog item in FixIt marketplace",
+      "type": "object",
+      "properties": {
+        "id": { "type": "string" },
+        "name": { "type": "string" },
+        "category": { "type": "string" },
+        "description": { "type": "string" },
+        "isApproved": { "type": "boolean" },
+        "requestedBy": { "type": "string" },
+        "suggestedPriceFloor": { "type": "number" },
+        "suggestedPriceCeiling": { "type": "number" },
+        "createdAt": { "type": "string", "format": "date-time" }
+      },
+      "required": ["id", "name", "category", "isApproved", "createdAt"]
+    },
+    "Job": {
+      "title": "Job",
+      "description": "Physical labor request ticket governed by dual escrow and triple verification",
+      "type": "object",
+      "properties": {
+        "id": { "type": "string" },
+        "consumerId": { "type": "string" },
+        "consumerName": { "type": "string" },
+        "title": { "type": "string" },
+        "description": { "type": "string" },
+        "serviceCategory": { "type": "string" },
+        "locationName": { "type": "string" },
+        "biddingMode": { "type": "string", "enum": ["blind_bidding", "bounty_bargain"] },
+        "bountyPrice": { "type": "number" },
+        "aiFloorPrice": { "type": "number" },
+        "partsMode": { "type": "string", "enum": ["multi_receipt", "escort_mode", "no_parts"] },
+        "status": {
+          "type": "string",
+          "enum": [
+            "awaiting_admin_verification",
+            "open_for_bids",
+            "price_locked",
+            "in_progress",
+            "on_the_way",
+            "arrived",
+            "verification_pending",
+            "warranty_active",
+            "completed",
+            "disputed",
+            "cancelled"
+          ]
+        },
+        "selectedBidId": { "type": "string" },
+        "selectedVendorId": { "type": "string" },
+        "selectedVendorName": { "type": "string" },
+        "agreedLaborFee": { "type": "number" },
+        "agreedWarrantyDays": { "type": "number" },
+        "warrantyExpiry": { "type": "string", "format": "date-time" },
+        "beforePhotoUrl": { "type": "string" },
+        "vendorAfterPhotoUrl": { "type": "string" },
+        "consumerAfterPhotoUrl": { "type": "string" },
+        "isPaymentVerified": { "type": "boolean" },
+        "paymentReceiptUrl": { "type": "string" },
+        "trackingActive": { "type": "boolean" },
+        "createdAt": { "type": "string", "format": "date-time" },
+        "updatedAt": { "type": "string", "format": "date-time" }
+      },
+      "required": ["id", "consumerId", "consumerName", "title", "serviceCategory", "biddingMode", "status", "createdAt"]
+    },
+    "Bid": {
+      "title": "Bid",
+      "description": "Labor-only bid submitted by vendor",
+      "type": "object",
+      "properties": {
+        "id": { "type": "string" },
+        "jobId": { "type": "string" },
+        "vendorId": { "type": "string" },
+        "vendorName": { "type": "string" },
+        "vendorIsPro": { "type": "boolean" },
+        "isFeatured": { "type": "boolean" },
+        "laborPrice": { "type": "number" },
+        "proposedWarrantyDays": { "type": "number" },
+        "counterNote": { "type": "string" },
+        "status": { "type": "string", "enum": ["submitted", "countered", "accepted", "rejected"] },
+        "createdAt": { "type": "string", "format": "date-time" }
+      },
+      "required": ["id", "jobId", "vendorId", "vendorName", "laborPrice", "status", "createdAt"]
+    },
+    "PartReceipt": {
+      "title": "PartReceipt",
+      "description": "Material receipt logged by vendor for on-site parts protocol",
+      "type": "object",
+      "properties": {
+        "id": { "type": "string" },
+        "jobId": { "type": "string" },
+        "vendorId": { "type": "string" },
+        "shopName": { "type": "string" },
+        "amount": { "type": "number" },
+        "receiptPhotoUrl": { "type": "string" },
+        "isApprovedByConsumer": { "type": "boolean" },
+        "createdAt": { "type": "string", "format": "date-time" }
+      },
+      "required": ["id", "jobId", "vendorId", "shopName", "amount", "createdAt"]
+    },
+    "Message": {
+      "title": "Message",
+      "description": "On-job communication message or voice note",
+      "type": "object",
+      "properties": {
+        "id": { "type": "string" },
+        "jobId": { "type": "string" },
+        "senderId": { "type": "string" },
+        "senderName": { "type": "string" },
+        "text": { "type": "string" },
+        "isVoiceNote": { "type": "boolean" },
+        "voiceDurationSeconds": { "type": "number" },
+        "createdAt": { "type": "string", "format": "date-time" }
+      },
+      "required": ["id", "jobId", "senderId", "senderName", "createdAt"]
+    },
+    "Review": {
+      "title": "Review",
+      "description": "Post-escrow verified review",
+      "type": "object",
+      "properties": {
+        "id": { "type": "string" },
+        "jobId": { "type": "string" },
+        "vendorId": { "type": "string" },
+        "consumerId": { "type": "string" },
+        "consumerName": { "type": "string" },
+        "rating": { "type": "number" },
+        "comment": { "type": "string" },
+        "createdAt": { "type": "string", "format": "date-time" }
+      },
+      "required": ["id", "jobId", "vendorId", "consumerId", "rating", "comment", "createdAt"]
+    }
+  },
+  "firestore": {
+    "/users/{userId}": {
+      "schema": { "$ref": "User" },
+      "description": "User profiles"
+    },
+    "/services/{serviceId}": {
+      "schema": { "$ref": "Service" },
+      "description": "Dynamic service catalog"
+    },
+    "/jobs/{jobId}": {
+      "schema": { "$ref": "Job" },
+      "description": "Job orders with escrow and triple-verify pipeline"
+    },
+    "/jobs/{jobId}/bids/{bidId}": {
+      "schema": { "$ref": "Bid" },
+      "description": "Bids placed by vendors on jobs"
+    },
+    "/jobs/{jobId}/receipts/{receiptId}": {
+      "schema": { "$ref": "PartReceipt" },
+      "description": "Material expense receipts"
+    },
+    "/jobs/{jobId}/messages/{messageId}": {
+      "schema": { "$ref": "Message" },
+      "description": "Job messaging and raw voice notes"
+    },
+    "/reviews/{reviewId}": {
+      "schema": { "$ref": "Review" },
+      "description": "Verified post-escrow reviews"
+    }
+  }
+}

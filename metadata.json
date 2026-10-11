@@ -1,0 +1,6 @@
+{
+  "name": "FixIt",
+  "description": "Hyper-local peer-to-peer on-demand labor marketplace with dual escrow protection and AI job scoping",
+  "requestFramePermissions": [],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}
